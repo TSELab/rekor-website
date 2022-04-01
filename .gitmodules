@@ -1,0 +1,9 @@
+[submodule "rekor-backend"]
+	path = rekor-backend
+	url = git@github.com:alanssitis/rekor-backend.git
+[submodule "rekor-website"]
+	path = rekor-website
+	url = git@github.com:alanssitis/rekor-website.git
+[submodule "rekor-frontend"]
+	path = rekor-frontend
+	url = git@github.com:alanssitis/rekor-frontend.git
