@@ -1,9 +1,41 @@
+version: '3.8'
+
 services:
+
   frontend: 
     build: rekor-frontend
     ports:
       - '3000:3000' 
+
   backend:
     build: rekor-backend
+    environment:
+      - DB_USER=test
+      - DB_PSSWD_FILE=/run/secrets/db_psswd
+      - DB_HOST="db"
     ports:
       - "5000:5000"
+    secrets:
+      - db_psswd
+
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_root_psswd
+      - MARIADB_USER=test
+      - MARIADB_PASSWORD_FILE=/run/secrets/db_psswd
+    secrets:
+      - db_root_psswd
+      - db_psswd
+    volumes:
+      - reckor-db:/var/lib/mysql
+
+volumes:
+  reckor-db:
+
+secrets:
+  db_root_psswd:
+    file: ./db_root_psswd.txt
+  db_psswd:
+    file: ./db_psswd.txt
