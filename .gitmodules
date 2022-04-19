@@ -7,3 +7,6 @@
 [submodule "rekor-frontend"]
 	path = rekor-frontend
 	url = git@github.com:alanssitis/rekor-frontend.git
+[submodule "rekor-monitor"]
+	path = rekor-monitor
+	url = git@github.com:vivek42537/rekor-monitor.git

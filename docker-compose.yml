@@ -10,24 +10,50 @@ services:
   backend:
     build: rekor-backend
     environment:
-      - DB_USER=test
-      - DB_PSSWD_FILE=/run/secrets/db_psswd
-      - DB_HOST="db"
+      - DB_ROOT_PASSWORD_FILE=/run/secrets/db_root_psswd
+      - DB_HOST=db
+      - DB_NAME=monitor
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
     ports:
       - "5000:5000"
     secrets:
-      - db_psswd
+      - db_root_psswd
+
+  monitor:
+    build: 
+      context: rekor-monitor
+      dockerfile: ./cmd/mirroring/Dockerfile
+    restart: always
+    environment:
+      - DBNAME=root:test@tcp(db)/monitor
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
 
   db:
     image: mariadb:latest
+    command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     environment:
+      - MARIADB_DATABASE=monitor
       - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_root_psswd
-      - MARIADB_USER=test
-      - MARIADB_PASSWORD_FILE=/run/secrets/db_psswd
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend
+    ports:
+      - "3306:3306"
     secrets:
       - db_root_psswd
-      - db_psswd
     volumes:
       - reckor-db:/var/lib/mysql
 
@@ -37,5 +63,6 @@ volumes:
 secrets:
   db_root_psswd:
     file: ./db_root_psswd.txt
-  db_psswd:
-    file: ./db_psswd.txt
+
+networks:
+  backend:
