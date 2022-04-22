@@ -4,8 +4,13 @@ services:
 
   frontend: 
     build: rekor-frontend
+    depends_on:
+      - backend
+
     ports:
       - '3000:3000' 
+    networks:
+      - frontend
 
   backend:
     build: rekor-backend
@@ -18,6 +23,7 @@ services:
         condition: service_healthy
     networks:
       - backend
+      - frontend
     ports:
       - "5000:5000"
     secrets:
@@ -66,3 +72,4 @@ secrets:
 
 networks:
   backend:
+  frontend:
