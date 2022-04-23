@@ -33,9 +33,9 @@ services:
     build: proxy
     restart: always
     environment:
-      - LETSENCRYPT_HOST=alan.seal.purdue.wtf
+      - LETSENCRYPT_HOST=monitor.seal.purdue.wtf
       - LETSENCRYPT_EMAIL=santiagotorres@purdue.edu
-      - VIRTUAL_HOST=alan.seal.purdue.wtf
+      - VIRTUAL_HOST=monitor.seal.purdue.wtf
     ports:
       - '443:443'
     depends_on:
