@@ -44,17 +44,18 @@ services:
       - frontnet
 
   monitor:
-    build: 
-      context: rekor-monitor
-      dockerfile: ./cmd/mirroring/Dockerfile
+    build: rekor-monitor
     restart: always
     environment:
-      - DBNAME=root:test@tcp(db)/monitor
+      - DB_NAME=monitor
+      - DB_PASSWORD=/run/secrets/db_root_psswd
     depends_on:
       db:
         condition: service_healthy
     networks:
       - backnet
+    secrets:
+      - db_root_psswd
 
   db:
     image: mariadb:latest

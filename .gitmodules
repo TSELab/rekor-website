@@ -9,4 +9,4 @@
 	url = git@github.com:alanssitis/rekor-frontend.git
 [submodule "rekor-monitor"]
 	path = rekor-monitor
-	url = git@github.com:vivek42537/rekor-monitor.git
+	url = git@github.com:alanssitis/rekor-monitor.git
