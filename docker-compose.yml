@@ -10,7 +10,7 @@ services:
     ports:
       - '3000:3000' 
     networks:
-      - frontend
+      - frontnet
 
   backend:
     build: rekor-backend
@@ -22,12 +22,26 @@ services:
       db:
         condition: service_healthy
     networks:
-      - backend
-      - frontend
+      - backnet
+      - frontnet
     ports:
-      - "5000:5000"
+      - '5000:5000'
     secrets:
       - db_root_psswd
+
+  proxy:
+    build: proxy
+    restart: always
+    environment:
+      - LETSENCRYPT_HOST=alan.seal.purdue.wtf
+      - LETSENCRYPT_EMAIL=santiagotorres@purdue.edu
+      - VIRTUAL_HOST=alan.seal.purdue.wtf
+    ports:
+      - '443:443'
+    depends_on:
+      - frontend
+    networks:
+      - frontnet
 
   monitor:
     build: 
@@ -40,7 +54,7 @@ services:
       db:
         condition: service_healthy
     networks:
-      - backend
+      - backnet
 
   db:
     image: mariadb:latest
@@ -55,7 +69,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - backend
+      - backnet
     ports:
       - "3306:3306"
     secrets:
@@ -71,5 +85,5 @@ secrets:
     file: ./db_root_psswd.txt
 
 networks:
-  backend:
-  frontend:
+  backnet:
+  frontnet:
