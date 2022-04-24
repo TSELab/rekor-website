@@ -6,7 +6,7 @@ services:
     build: 
       context: rekor-frontend
       args:
-        - VITE_MONITOR_API=https://localhost:443/api/
+        - VITE_MONITOR_API=https://monitor.tsel.purdue.wtf/api/
     image: sigstoremonitor/monitor-frontend:test
     depends_on:
       - backend
