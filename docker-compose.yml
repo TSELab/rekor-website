@@ -3,7 +3,11 @@ version: '3.8'
 services:
 
   frontend: 
-    build: rekor-frontend
+    build: 
+      context: rekor-frontend
+      args:
+        - VITE_MONITOR_API=http://localhost:443/api/
+    image: sigstoremonitor/monitor-frontend:test
     depends_on:
       - backend
 
@@ -14,6 +18,7 @@ services:
 
   backend:
     build: rekor-backend
+    image: sigstoremonitor/monitor-backend:test
     environment:
       - DB_ROOT_PASSWORD_FILE=/run/secrets/db_root_psswd
       - DB_HOST=db
@@ -31,6 +36,7 @@ services:
 
   proxy:
     build: proxy
+    image: sigstoremonitor/monitor-proxy:test
     restart: always
     environment:
       - LETSENCRYPT_HOST=monitor.seal.purdue.wtf
@@ -45,6 +51,7 @@ services:
 
   monitor:
     build: rekor-monitor
+    image: sigstoremonitor/monitor-mirror:test
     restart: always
     environment:
       - DB_NAME=monitor
