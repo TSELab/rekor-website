@@ -19,9 +19,9 @@ services:
     build: rekor-backend
     image: sigstoremonitor/monitor-backend:test
     environment:
-      - DB_ROOT_PASSWORD=test
       - DB_HOST=db
       - DB_NAME=monitor
+      - DB_ROOT_PASSWORD=test
     depends_on:
       db:
         condition: service_healthy
@@ -47,6 +47,7 @@ services:
     image: sigstoremonitor/monitor-mirror:test
     restart: always
     environment:
+      - DB_HOST=db
       - DB_NAME=monitor
       - DB_PASSWORD=test
     depends_on:
