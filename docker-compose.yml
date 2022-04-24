@@ -6,13 +6,12 @@ services:
     build: 
       context: rekor-frontend
       args:
-        - VITE_MONITOR_API=http://localhost:443/api/
+        - VITE_MONITOR_API=https://localhost:443/api/
     image: sigstoremonitor/monitor-frontend:test
     depends_on:
       - backend
-
-    ports:
-      - '3000:3000' 
+    expose:
+      - '3000' 
     networks:
       - frontnet
 
@@ -20,7 +19,7 @@ services:
     build: rekor-backend
     image: sigstoremonitor/monitor-backend:test
     environment:
-      - DB_ROOT_PASSWORD_FILE=/run/secrets/db_root_psswd
+      - DB_ROOT_PASSWORD=test
       - DB_HOST=db
       - DB_NAME=monitor
     depends_on:
@@ -29,19 +28,13 @@ services:
     networks:
       - backnet
       - frontnet
-    ports:
-      - '5000:5000'
-    secrets:
-      - db_root_psswd
+    expose:
+      - '5000'
 
   proxy:
     build: proxy
     image: sigstoremonitor/monitor-proxy:test
     restart: always
-    environment:
-      - LETSENCRYPT_HOST=monitor.seal.purdue.wtf
-      - LETSENCRYPT_EMAIL=santiagotorres@purdue.edu
-      - VIRTUAL_HOST=monitor.seal.purdue.wtf
     ports:
       - '443:443'
     depends_on:
@@ -55,14 +48,12 @@ services:
     restart: always
     environment:
       - DB_NAME=monitor
-      - DB_PASSWORD=/run/secrets/db_root_psswd
+      - DB_PASSWORD=test
     depends_on:
       db:
         condition: service_healthy
     networks:
       - backnet
-    secrets:
-      - db_root_psswd
 
   db:
     image: mariadb:latest
@@ -70,27 +61,21 @@ services:
     restart: always
     environment:
       - MARIADB_DATABASE=monitor
-      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_root_psswd
+      - MARIADB_ROOT_PASSWORD=test
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '--silent']
       interval: 3s
       retries: 5
       start_period: 30s
     networks:
       - backnet
-    ports:
-      - "3306:3306"
-    secrets:
-      - db_root_psswd
+    expose:
+      - '3306'
     volumes:
-      - reckor-db:/var/lib/mysql
+      - monitor:/var/lib/mysql
 
 volumes:
-  reckor-db:
-
-secrets:
-  db_root_psswd:
-    file: ./db_root_psswd.txt
+  monitor:
 
 networks:
   backnet:
