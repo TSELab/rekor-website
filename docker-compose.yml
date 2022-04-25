@@ -36,7 +36,7 @@ services:
     image: sigstoremonitor/monitor-proxy:test
     restart: always
     ports:
-      - '443:443'
+      - '80:80'
     depends_on:
       - frontend
     networks:
